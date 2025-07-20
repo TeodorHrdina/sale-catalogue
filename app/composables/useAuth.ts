@@ -4,12 +4,15 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  signInWithPopup,
+  GoogleAuthProvider,
   type User
 } from 'firebase/auth'
 import { useFirebase } from './useFirebase'
 
 const user = ref<User | null>(null)
 const loading = ref(true)
+let authInitialized = false
 
 export const useAuth = () => {
   const { auth } = useFirebase()
@@ -43,11 +46,25 @@ export const useAuth = () => {
     }
   }
 
+  const signInWithGoogle = async () => {
+    try {
+      const provider = new GoogleAuthProvider()
+      const result = await signInWithPopup(auth, provider)
+      return { user: result.user, error: null }
+    } catch (error: any) {
+      return { user: null, error: error.message }
+    }
+  }
+
+
   const initAuth = () => {
-    onAuthStateChanged(auth, (firebaseUser) => {
-      user.value = firebaseUser
-      loading.value = false
-    })
+    if (!authInitialized) {
+      onAuthStateChanged(auth, (firebaseUser) => {
+        user.value = firebaseUser
+        loading.value = false
+      })
+      authInitialized = true
+    }
   }
 
   return {
@@ -57,6 +74,7 @@ export const useAuth = () => {
     signIn,
     signUp,
     logout,
+    signInWithGoogle,
     initAuth
   }
 }
