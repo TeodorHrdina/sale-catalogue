@@ -3,13 +3,7 @@
     <header class="header">
       <h1>Sale Catalogue</h1>
       <div class="auth-section">
-        <template v-if="isAuthenticated">
-          <LoginButton :user="user" @click="handleUserMenu" />
-          <button @click="handleLogout" class="logout-btn">Logout</button>
-        </template>
-        <template v-else>
-          <LoginButton @click="showLogin = true" />
-        </template>
+        <LoginButton :user="user" @login="showLogin = true" @logout="handleLogout" />
       </div>
     </header>
     
@@ -43,10 +37,6 @@ const handleLogout = async () => {
   await logout()
 }
 
-const handleUserMenu = () => {
-  // Could show user menu/profile dropdown here
-  console.log('User menu clicked')
-}
 
 onMounted(() => {
   initAuth()
