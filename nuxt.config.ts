@@ -3,6 +3,12 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   modules: ['@nuxt/fonts', '@nuxt/icon', '@nuxt/image'],
+  fonts: {
+    families: [
+      { name: 'JetBrains Mono', provider: 'google' }
+    ]
+  },
+  css: ['@/assets/css/global.css'],
   runtimeConfig: {
     public: {
       firebaseApiKey: process.env.NUXT_PUBLIC_FIREBASE_API_KEY,

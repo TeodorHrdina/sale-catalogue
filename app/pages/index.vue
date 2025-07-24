@@ -8,8 +8,24 @@
     </header>
     
     <main class="main-content">
-      <h2>Welcome to Sale Catalogue</h2>
-      <p>Your one-stop shop for all your needs</p>
+      <div class="hero-section">
+        <h2>Welcome to Sale Catalogue</h2>
+        <p>Your one-stop shop for all your technology needs</p>
+      </div>
+      
+      <div class="browse-section">
+        <div class="container">
+          <CategorySelector 
+            v-model="selectedCategory" 
+            label="Browse by Category"
+          />
+          
+          <Catalogue 
+            :selected-category="selectedCategory"
+            :title="getCatalogueTitle()"
+          />
+        </div>
+      </div>
     </main>
     
     <LoginPopup 
@@ -23,11 +39,15 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useAuth } from '~/composables/useAuth'
+import { Category } from '~/types'
 import LoginPopup from '~/components/LoginPopup.vue'
 import LoginButton from '~/components/LoginButton.vue'
+import CategorySelector from '~/components/CategorySelector.vue'
+import Catalogue from '~/components/Catalogue.vue'
 
 const { user, isAuthenticated, logout, initAuth } = useAuth()
 const showLogin = ref(false)
+const selectedCategory = ref(null)
 
 const handleLoginSuccess = () => {
   console.log('Login successful!')
@@ -37,6 +57,12 @@ const handleLogout = async () => {
   await logout()
 }
 
+const getCatalogueTitle = () => {
+  if (!selectedCategory.value) {
+    return 'All Products'
+  }
+  return `${selectedCategory.value} Products`
+}
 
 onMounted(() => {
   initAuth()
@@ -88,21 +114,60 @@ onMounted(() => {
 }
 
 .main-content {
-  text-align: center;
-  padding: 4rem 2rem;
+  min-height: calc(100vh - 80px);
 }
 
-.main-content h2 {
+.hero-section {
+  text-align: center;
+  padding: 4rem 2rem 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.hero-section h2 {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #1f2937;
   margin-bottom: 1rem;
 }
 
-.main-content p {
+.hero-section p {
   font-size: 1.25rem;
-  color: #6b7280;
+  opacity: 0.9;
   max-width: 600px;
   margin: 0 auto;
+}
+
+.browse-section {
+  background: #f9fafb;
+  min-height: 60vh;
+  padding: 3rem 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 2rem 1rem 1.5rem;
+  }
+  
+  .hero-section h2 {
+    font-size: 2rem;
+  }
+  
+  .hero-section p {
+    font-size: 1.1rem;
+  }
+  
+  .browse-section {
+    padding: 2rem 0;
+  }
+  
+  .container {
+    padding: 0 1rem;
+  }
 }
 </style>

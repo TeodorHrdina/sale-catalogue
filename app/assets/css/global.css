@@ -1,0 +1,9 @@
+/* Global font configuration */
+html, body, * {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Ensure consistent font application */
+input, textarea, button, select {
+  font-family: 'JetBrains Mono', monospace;
+}
