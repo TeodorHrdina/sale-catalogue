@@ -114,6 +114,29 @@ export const useFirestore = () => {
     }
   }
 
+  const isAdmin = async (uid: string) => {
+    const { data, error } = await getDocument('users', 'admins')
+    
+    if (error || !data) {
+      return false
+    }
+    
+    // Type assertion for admin document structure
+    const adminData = data as { id: string; superadmin?: string; admins?: string[] }
+    
+    // Check if user is superadmin
+    if (adminData.superadmin === uid) {
+      return true
+    }
+    
+    // Check if user is in admins array
+    if (adminData.admins && Array.isArray(adminData.admins)) {
+      return adminData.admins.includes(uid)
+    }
+    
+    return false
+  }
+
   const queryWhere = (field: string, operator: any, value: any) => where(field, operator, value)
   const queryOrderBy = (field: string, direction: 'asc' | 'desc' = 'asc') => orderBy(field, direction)
   const queryLimit = (limitCount: number) => limit(limitCount)
@@ -126,6 +149,7 @@ export const useFirestore = () => {
     getCollection,
     updateDocument,
     deleteDocument,
+    isAdmin,
     queryWhere,
     queryOrderBy,
     queryLimit

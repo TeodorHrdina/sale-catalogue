@@ -27,9 +27,7 @@ export const useFirebase = () => {
       app = existingApps[0]!
     } else {
       let config = getFirebaseConfig()
-      console.log(config)
       app = initializeApp(config)
-      console.log(app)
     }
     auth = getAuth(app)
     db = getFirestore(app)

@@ -10,6 +10,10 @@
     </button>
     
     <div v-if="user && showDropdown" class="dropdown">
+      <button v-if="isUserAdmin" @click="handleAdmin" class="dropdown-item">
+        <Icon name="material-symbols:admin-panel-settings" size="1rem" />
+        Admin Panel
+      </button>
       <button @click="handleLogout" class="dropdown-item">
         <Icon name="material-symbols:logout" size="1rem" />
         Logout
@@ -21,7 +25,9 @@
 
 <script setup lang="ts">
 import type { User } from 'firebase/auth'
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { useFirestore } from '~/composables/useFirestore'
+import { useRouter } from 'vue-router'
 
 interface Props {
   user?: User | null
@@ -29,6 +35,10 @@ interface Props {
 
 const props = defineProps<Props>()
 const emit = defineEmits(['login', 'logout'])
+
+const { isAdmin } = useFirestore()
+const router = useRouter()
+const isUserAdmin = ref(false)
 
 const showDropdown = ref(false)
 const container = ref<HTMLElement>()
@@ -46,12 +56,29 @@ const handleLogout = () => {
   showDropdown.value = false
 }
 
+const handleAdmin = () => {
+  router.push('/admin')
+  showDropdown.value = false
+}
+
+const checkAdminStatus = async () => {
+  if (props.user?.uid) {
+    isUserAdmin.value = await isAdmin(props.user.uid)
+  } else {
+    isUserAdmin.value = false
+  }
+}
+
 const closeDropdown = (event: Event) => {
   if (container.value && !container.value.contains(event.target as Node)) {
     showDropdown.value = false
   }
 }
 
+
+watch(() => props.user, () => {
+  checkAdminStatus()
+}, { immediate: true })
 
 onMounted(() => {
   document.addEventListener('click', closeDropdown)
